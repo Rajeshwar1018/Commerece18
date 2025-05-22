@@ -1,6 +1,7 @@
 const Product = require('../Models/Product');
 
-class ProductService {
+class ProductService 
+{
  
   async createProduct(details, user) {
     const { name, description, price, category } = details;
@@ -22,46 +23,14 @@ class ProductService {
     }
   }
 
-  
-  async getAllProduct(filters, page, limit = 10) {
-    try {
-      const { category, minPrice, maxPrice, search, sortBy } = filters;
-      const query = {};
-      
-      if (category) {
-        query.category = category;
-      }
-      if (minPrice || maxPrice) {
-        query.price = {};
-        if (minPrice) query.price.$gte = parseFloat(minPrice);
-        if (maxPrice) query.price.$lte = parseFloat(maxPrice);
-      }
-      if (search) {
-        query.name = { $regex: search, $options: 'i' };
-      }
-
-      const skip = (page - 1) * limit;
-      let sortCriteria = {};
-      if (sortBy === 'LowToHigh') {
-        sortCriteria = { price: 1 };
-      } else if (sortBy === 'HighToLow') {
-        sortCriteria = { price: -1 };
-      } else {
-        sortCriteria = { createdAt: -1 };
-      }
-
-      const productDetails = await Product.find(query)
-        .skip(skip)
-        .limit(limit)
-        .sort(sortCriteria);
-
-      return productDetails;
-    } catch (error) {
-      console.error("Error in getting product: ", error);
-      throw new Error(error);
-    }
-  }
-
+  async getAllProduct() {
+  try {
+    const productDetails = await Product.find().sort({ createdAt: -1 });
+    return productDetails;
+  } catch (error) {
+    console.error("Error in getting product: ", error);
+    throw new Error(error.message);
+  }}
 
   async updateProduct(id, updateData, user) {
     try {
